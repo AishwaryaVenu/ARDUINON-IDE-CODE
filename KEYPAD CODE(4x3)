@@ -1,0 +1,68 @@
+
+#include <Keypad.h>// library for the 4X3 keypad
+
+const byte COLS = 4; //four rows
+const byte ROWS = 3; //three columns
+char keys[ROWS][COLS] = {
+    {'1','2','3'},
+    {'4','5','6'},
+    {'7','8','9'},
+    {'*','0','#'}
+};
+
+byte rowPins[ROWS] = {5, 4, 3, 2}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {8, 7, 6}; //connect to the column pinouts of the keypad
+
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+byte ledPin = ; //type the pin no of the led before the semicolon
+
+boolean blink = false;
+boolean ledPin_state;
+
+void setup()
+
+{
+    Serial.begin(15200);
+    pinMode(ledPin, OUTPUT);              
+    digitalWrite(ledPin, HIGH);           
+    ledPin_state = digitalRead(ledPin);   
+    keypad.addEventListener(keypadEvent); //add any event to the keypad
+}
+
+void loop(){
+    char key = keypad.getKey();
+
+    if (key) {
+        Serial.println(key);
+    }
+    if (blink){
+        digitalWrite(ledPin,!digitalRead(ledPin));    // Change the ledPin from Hi2Lo or Lo2Hi.
+        delay(2000);
+    }
+}
+
+
+void keypadEvent(KeypadEvent key)
+{
+    switch (keypad.getState()){
+    case PRESSED:
+        if (key == "54")
+            digitalWrite(ledPin,!digitalRead(ledPin));
+            ledPin_state = digitalRead(ledPin);        
+        }
+        break;
+
+    case RELEASED:
+        if (key == "123') {
+            digitalWrite(ledPin,ledPin_state);    
+            blink = false;
+        }
+        break;
+
+    case HOLD:
+        if (key == '123') {
+            blink = true;    //the led blinks while the key is on hold
+        }
+        break;
+    }
+}
